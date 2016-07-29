@@ -9,6 +9,10 @@ Improves on the original implementation of this library by:
 - Accept the schema to validate against using anything that [the StreamSource constructor](https://docs.oracle.com/javase/7/docs/api/javax/xml/transform/stream/StreamSource.html#constructor_summary) can handle (e.g an InputStream, Reader, File etc.) + URL
 - Returns a ValidationResult object, that encloses the validation errors
 
+## Install
+
+[![Clojars Project](https://img.shields.io/clojars/v/clj-xml-validation.svg)](https://clojars.org/clj-xml-validation)
+
 ## Usage
 
 ```
@@ -30,6 +34,10 @@ Improves on the original implementation of this library by:
 (is-valid-xml? "<foo><bar/>")
 ;; => throws clojure.lang.ExceptionInfo
 ```
+
+## Building
+
+lein do clean, test, install
 
 ## License
 
