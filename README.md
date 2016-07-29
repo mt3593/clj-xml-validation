@@ -18,7 +18,6 @@ Improves on the original implementation of this library by:
 ```
 (require '[clj-xml-validation.core :as xmlv])
 (def is-valid-xml? (xmlv/create-validation-fn (clojure.java.io/resource "example.xsd")))
-;; => ValidationResult
 
 (xmlv/valid? (is-valid-xml? "<foo><bar/></foo>"))
 ;; => true or false
