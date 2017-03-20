@@ -62,15 +62,14 @@
   "Create a function that when called will validate an XML stream source"
   [& schemas]
   {:pre [(every? (partial satisfies? StreamSourcable) schemas)]}
-  (let [sources (into-array StreamSource (map stream-source schemas))]
-    ;; ensure schemas are valid
-    (validator-from-schemas sources)
+  (let [sources (into-array StreamSource (map stream-source schemas))
+        validator (validator-from-schemas sources) ;; do this here to ensure schemas are valid
+        ]
 
     (fn [xmldoc]
       {:pre [(satisfies? StreamSourcable xmldoc)]}
       (try
-        (let [validator (validator-from-schemas sources)
-              errs (atom [])
+        (let [errs (atom [])
               _ (.setErrorHandler validator (create-error-handler errs))]
 
           (.validate validator (stream-source xmldoc))

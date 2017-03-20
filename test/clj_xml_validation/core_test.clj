@@ -5,6 +5,12 @@
 (def validate (create-validation-fn (clojure.java.io/resource "example.xsd")))
 (def validate-two (create-validation-fn (clojure.java.io/resource "example2.xsd") (clojure.java.io/resource "example3.xsd")))
 
+(def xsd-str
+  "<?xml version=\"1.0\"?>
+    <xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\">
+    <xs:element name=\"foo\" type=\"xs:string\" />
+    </xs:schema>\n")
+
 (deftest obviously-wrong
   (testing "Validator throws exception on unparseable XML"
     (is (thrown? clojure.lang.ExceptionInfo (validate "<wrong>")))))
@@ -40,3 +46,8 @@
   (testing "validator with 2 schemas fails if either type of xml is malformed"
     (is (thrown? clojure.lang.ExceptionInfo (validate-two "<wrong<")))))
 
+(deftest xsd-from-string
+  (testing "Validation works when xsd is read from string"
+    (let [validate (create-validation-fn xsd-str)]
+      (is (valid? (validate "<foo>asdf</foo>")))
+      (is (not (valid? (validate "<bar />")))))))
