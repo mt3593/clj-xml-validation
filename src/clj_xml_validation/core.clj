@@ -1,5 +1,6 @@
 (ns clj-xml-validation.core
-  (:require [clojure.java.io :as io])
+  (:require [clojure.java.io :as io]
+            [clojure.set :as set])
   (:import [javax.xml XMLConstants]
            [org.xml.sax SAXException ErrorHandler SAXParseException]
            [javax.xml.validation SchemaFactory]
@@ -39,8 +40,8 @@
   [source exc]
   (->
     (bean exc)
-    (clojure.set/rename-keys {:lineNumber :line-number
-                              :columnNumber :column-number})
+    (set/rename-keys {:lineNumber :line-number
+                      :columnNumber :column-number})
     (select-keys [:message :line-number :column-number])
     (assoc :source source)))
 
@@ -62,15 +63,14 @@
   "Create a function that when called will validate an XML stream source"
   [& schemas]
   {:pre [(every? (partial satisfies? StreamSourcable) schemas)]}
-  (let [sources (into-array StreamSource (map stream-source schemas))]
-    ;; ensure schemas are valid
-    (validator-from-schemas sources)
+  (let [sources (into-array StreamSource (map stream-source schemas))
+        validator (validator-from-schemas sources) ;; do this here to ensure schemas are valid
+        ]
 
     (fn [xmldoc]
       {:pre [(satisfies? StreamSourcable xmldoc)]}
       (try
-        (let [validator (validator-from-schemas sources)
-              errs (atom [])
+        (let [errs (atom [])
               _ (.setErrorHandler validator (create-error-handler errs))]
 
           (.validate validator (stream-source xmldoc))
