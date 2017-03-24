@@ -1,4 +1,4 @@
-(defproject clj-xml-validation "1.0.2-SNAPSHOT"
+(defproject clj-xml-validation "1.0.2"
   :description "Simple XML Schema validation library for Clojure"
   :url "https://github.com/bbbates/clj-xml-validation"
   :license {:name "Eclipse Public License"
