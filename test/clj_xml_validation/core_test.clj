@@ -51,3 +51,12 @@
     (let [validate (create-validation-fn xsd-str)]
       (is (valid? (validate "<foo>asdf</foo>")))
       (is (not (valid? (validate "<bar />")))))))
+
+(def external-entity-injection
+  "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+   <!DOCTYPE seeker [\r\n<!ENTITY peeking SYSTEM '/tmp/does-not-exist-slsjflsdfsjdf'>\n]>
+   <note><to></to><from>&peeking;</from><heading></heading><body></body></note>")
+
+(deftest prevent-xml-external-entity-injection
+  (testing "Prevent against https://owasp.org/www-community/vulnerabilities/XML_External_Entity_(XXE)_Processing"
+    (is (thrown? clojure.lang.ExceptionInfo (validate external-entity-injection)))))

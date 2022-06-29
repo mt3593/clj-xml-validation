@@ -4,6 +4,7 @@
   (:import [javax.xml XMLConstants]
            [org.xml.sax SAXException ErrorHandler SAXParseException]
            [javax.xml.validation SchemaFactory]
+           [javax.xml XMLConstants]
            [javax.xml.transform.stream StreamSource]
            [java.io InputStream Reader File]
            [java.net URL]))
@@ -32,9 +33,12 @@
 
 (defn- validator-from-schemas
   [sources]
-  (-> (SchemaFactory/newInstance XMLConstants/W3C_XML_SCHEMA_NS_URI)
-      (.newSchema sources)
-      (.newValidator)))
+  (let [validator (-> (SchemaFactory/newInstance XMLConstants/W3C_XML_SCHEMA_NS_URI)
+                      (.newSchema sources)
+                      (.newValidator))]
+    (doto validator
+      (.setProperty XMLConstants/ACCESS_EXTERNAL_DTD "")
+      (.setProperty XMLConstants/ACCESS_EXTERNAL_SCHEMA ""))))
 
 (defn- sax-parse-exception->m
   [source exc]
